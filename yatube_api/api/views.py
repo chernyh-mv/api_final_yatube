@@ -5,7 +5,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 
-from posts.models import Comment, Group, Post
+from posts.models import Group, Post
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
                           PostSerializer)
 from .permissions import IsAuthorOrReadOnly
@@ -15,6 +15,7 @@ def get_post(self):
     """Функция для получения поста."""
     post = get_object_or_404(Post, id=self.kwargs['post_id'])
     return post
+
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()

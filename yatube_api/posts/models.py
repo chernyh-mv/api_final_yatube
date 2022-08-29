@@ -31,7 +31,6 @@ class Post(models.Model):
         ordering = ('pk', )
 
 
-
 class Comment(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
