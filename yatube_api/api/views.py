@@ -32,7 +32,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     @property
     def get_post(self):
         """Функция для получения поста."""
-        return get_object_or_404(Post, id=self.kwargs['post_id']) 
+        return get_object_or_404(Post, id=self.kwargs['post_id'])
 
     def get_queryset(self):
         return self.get_post.comments.all()
