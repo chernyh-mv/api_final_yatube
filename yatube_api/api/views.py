@@ -11,12 +11,6 @@ from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
 from .permissions import IsAuthorOrReadOnly
 
 
-def get_post(self):
-    """Функция для получения поста."""
-    post = get_object_or_404(Post, id=self.kwargs['post_id'])
-    return post
-
-
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -35,13 +29,16 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
+    @property
+    def get_post(self):
+        """Функция для получения поста."""
+        return get_object_or_404(Post, id=self.kwargs['post_id']) 
+
     def get_queryset(self):
-        post = get_post(self)
-        return post.comments
+        return self.get_post.comments.all()
 
     def perform_create(self, serializer):
-        post = get_post(self)
-        serializer.save(author=self.request.user, post=post)
+        serializer.save(author=self.request.user, post=self.get_post)
 
 
 class FollowViewSet(viewsets.mixins.CreateModelMixin,

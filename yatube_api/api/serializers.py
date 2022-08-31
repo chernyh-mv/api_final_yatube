@@ -18,10 +18,10 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
-    post = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         fields = '__all__'
+        read_only_field = 'post'
         model = Comment
 
 
@@ -33,16 +33,18 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
+        read_only=True,
         slug_field='username',
-        queryset=User.objects.all(),
-        default=serializers.CurrentUserDefault())
+        default=serializers.CurrentUserDefault()
+    )
     following = serializers.SlugRelatedField(
         slug_field='username',
-        queryset=User.objects.all())
+        queryset=User.objects.all()
+    )
 
     class Meta:
+        fields = ('user', 'following')
         model = Follow
-        fields = '__all__'
         validators = (
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(),
@@ -52,8 +54,8 @@ class FollowSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        """Запрет на подписку на самого себя."""
-        if self.context['request'].user == data['following']:
+        user = self.context.get('request').user
+        if user == data['following']:
             raise serializers.ValidationError(
                 'Подписка на самого себя невозможна.')
         return data
